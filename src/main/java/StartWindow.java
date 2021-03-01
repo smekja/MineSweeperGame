@@ -5,11 +5,7 @@ import javax.swing.text.Document;
 import java.awt.*;
 
 
-
 public class StartWindow {
-    public static int numberOfMines;
-    public static int xSize;
-    public static int ySize;
 
     StartWindow() {
         JFrame frame = new JFrame("Start Window");
@@ -19,11 +15,9 @@ public class StartWindow {
         JTextField textX = new JTextField(4);
         JTextField textY = new JTextField(4);
         JTextField textMines = new JTextField(4);
-
         JLabel labelX = new JLabel("Width of the mine field: ");
         JLabel labelY = new JLabel("Height of the mine field: ");
         JLabel labelMines = new JLabel("Number of mines: ");
-
         JButton startButton = new JButton("Start");
 
         // Adding compoments
@@ -52,8 +46,7 @@ public class StartWindow {
                 // enables the start button only if all text fields are not empty
                 if (!(textX.getText().equals("") || textY.equals("") || textMines.getText().equals(""))) {
                     startButton.setEnabled(true);
-                }
-                if (textX.getText().equals("") || textY.equals("") || textMines.getText().equals("")) {
+                } else {
                     startButton.setEnabled(false);
                 }
             }
@@ -64,44 +57,39 @@ public class StartWindow {
         textMines.getDocument().addDocumentListener(watchForChange);
 
         startButton.addActionListener(actionEvent -> {
-            xSize = Integer.parseInt(textX.getText());
-            ySize = Integer.parseInt(textY.getText());
-            numberOfMines = Integer.parseInt(textMines.getText());
+            int xSize = Integer.parseInt(textX.getText());
+            int ySize = Integer.parseInt(textY.getText());
+            int numberOfMines = Integer.parseInt(textMines.getText());
             if (xSize * ySize < numberOfMines) {
                 JOptionPane.showMessageDialog(null, "Number of mines has to be less than the" +
                         " total size of the mine field.(less than width*height)");
-            } else if(numberOfMines < 1) {
+            } else if (numberOfMines < 1) {
                 JOptionPane.showMessageDialog(null, "Number of mines has to be more than 0");
-            }
-            else {
-                new MineFieldApp();
+            } else {
+                new MineFieldApp(xSize, ySize, numberOfMines);
                 frame.setVisible(false);
             }
         });
-
-
         frame.setLayout(new FlowLayout());
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-
     }
-    // deletes any letters from the text field, allows only numbers to be entered
+
+    // Deletes any letters from the text field, allows only numbers to be entered
     private String deleteLetters(String text) {
         if (isNumeric(text)) {
             return null;
-        }
-        else return text.replaceAll("[^\\d]", "");
+        } else return text.replaceAll("[^\\d]", "");
     }
 
     private void newRunnable(JTextField textField) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                String text = textField.getText();
-                if (!(deleteLetters(text) == null)) {
-                    textField.setText(deleteLetters(text));
+                String text = deleteLetters(textField.getText());
+                if (!(text == null)) {
+                    textField.setText(text);
                 }
             }
         });
@@ -118,6 +106,5 @@ public class StartWindow {
         }
         return true;
     }
-
 }
 

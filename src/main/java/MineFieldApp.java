@@ -5,17 +5,22 @@ import java.text.SimpleDateFormat;
 
 
 public class MineFieldApp {
-    private final int X_SIZE = StartWindow.xSize;
-    private final int Y_SIZE = StartWindow.ySize;
-    private final int NUMBER_OF_MINES = StartWindow.numberOfMines;
-    private boolean gameOver = false;
+    private final int xSize;
+    private final int ySize;
+    private final int numberOfMines;
     private long runningTime;
     private Timer timer;
     private SimpleDateFormat df = new SimpleDateFormat("mm:ss");
-    MineFieldApp() {
+
+    MineFieldApp(int xSize, int ySize, int numberOfMines) {
+        this.xSize = xSize;
+        this.ySize = ySize;
+        this.numberOfMines = numberOfMines;
+
         JFrame frame = new JFrame("MineSweeper");
+
         // Panels to divide the window to minefield and timer
-        JPanel panelMines = new JPanel(new GridLayout(X_SIZE, Y_SIZE));
+        JPanel panelMines = new JPanel(new GridLayout(xSize, ySize));
         JPanel panelTimer = new JPanel(new FlowLayout());
         frame.add(panelMines);
         frame.add(panelTimer);
@@ -25,10 +30,10 @@ public class MineFieldApp {
         int delay = 1000;
         panelTimer.add(runningClock);
 
-        PlayField playField = new PlayField(X_SIZE, Y_SIZE, NUMBER_OF_MINES);
+        PlayField playField = new PlayField(xSize, ySize, numberOfMines);
 
-        for (int y = 0; y < Y_SIZE; y++) {
-            for (int x = 0; x < X_SIZE; x++) {
+        for (int y = 0; y < ySize; y++) {
+            for (int x = 0; x < xSize; x++) {
                 JButton button = new JButton();
                 button.setBackground(Color.LIGHT_GRAY);
                 button.setOpaque(true);
@@ -38,24 +43,24 @@ public class MineFieldApp {
                     @Override
                     public void mouseClicked(MouseEvent mouseEvent) {
                         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-                            if (!(button.getText().equals("?") || gameOver)) {
+                            if (!(button.getText().equals("?"))) {
                                 // Mine exploded
                                 if (playField.isThereMine(finalX, finalY)) {
                                     button.setBackground(Color.RED);
                                     button.setText("x");
-                                    gameOver = true;
                                     timer.stop();
                                     createPlayAgainDialog(frame, "Boom, game over!");
+                                    frame.dispose();
 
                                 }
-                                // Empty field
+                                // Empty field clicked (without a mine)
                                 else {
                                     button.setBackground(Color.white);
                                     button.setText(String.valueOf(playField.getNumberOfMinesAround(finalX, finalY)));
                                     playField.decrementOpenFields();
                                     if (playField.hasWon()) {
                                         victory(frame);
-                                        }
+                                    }
                                 }
                                 button.setEnabled(false);
                             }
@@ -73,34 +78,25 @@ public class MineFieldApp {
                             }
                         }
                     }
-
                     @Override
                     public void mousePressed(MouseEvent mouseEvent) {
-
                     }
-
                     @Override
                     public void mouseReleased(MouseEvent mouseEvent) {
-
                     }
-
                     @Override
                     public void mouseEntered(MouseEvent mouseEvent) {
-
                     }
-
                     @Override
                     public void mouseExited(MouseEvent mouseEvent) {
-
                     }
                 });
                 panelMines.add(button);
             }
-        }
-
+        } // End of the for loop
 
         // Frame setup
-        frame.setLayout(new GridLayout(2,1));
+        frame.setLayout(new GridLayout(2, 1));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frameSize(frame);
         frame.setLocationRelativeTo(null);
@@ -108,13 +104,12 @@ public class MineFieldApp {
 
         ActionListener taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                runningTime = runningTime + delay;
-                runningClock.setText(df.format(runningTime));
+                runningClock.setText(df.format(runningTime = runningTime + delay));
             }
         };
         timer = new Timer(delay, taskPerformer);
         timer.start();
-    }
+    } // End of the constructor
 
     private void createPlayAgainDialog(JFrame frame, String message) {
         Object[] options = {"Yes, please",
@@ -127,20 +122,20 @@ public class MineFieldApp {
                 null,     //do not use a custom Icon
                 options,  //the titles of buttons
                 options[0]); //default button title
-        // 0 = yes, play again, 1 = no
+        // 0 = yes, play again; 1 = no
         if (n == 0) {
-            new MineFieldApp();
+            new MineFieldApp(xSize, ySize, numberOfMines);
         }
     }
+
     private <T extends Component> void frameSize(T aFrame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = screenSize.width;
         int height = screenSize.height;
-        aFrame.setSize( (int)(width/1.3),(int)(height/1.2) );
+        aFrame.setSize((int) (width / 1.3), (int) (height / 1.2));
     }
 
     private void victory(JFrame frame) {
-        gameOver = true;
         timer.stop();
         if (runningTime < PlayField.bestTime) {
             PlayField.bestTime = runningTime;
@@ -149,5 +144,6 @@ public class MineFieldApp {
                     "                   ");
         } else
             createPlayAgainDialog(frame, "Congrats, you are amazing. You have found all the mines!");
+        frame.dispose();
     }
 }
