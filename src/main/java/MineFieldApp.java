@@ -9,8 +9,8 @@ public class MineFieldApp {
     private final int ySize;
     private final int numberOfMines;
     private long runningTime;
-    private Timer timer;
-    private SimpleDateFormat df = new SimpleDateFormat("mm:ss");
+    private final Timer timer;
+    private final SimpleDateFormat df = new SimpleDateFormat("mm:ss");
 
     MineFieldApp(int xSize, int ySize, int numberOfMines) {
         this.xSize = xSize;
