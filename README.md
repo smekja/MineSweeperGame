@@ -2,6 +2,8 @@
 
 Small mine sweeper game. Can you find all the mines without exploding?
 
+To start the game, run the MineSweeper.jar file.
+
 *Controls*
 1. You can choose the size of the minefield and how many mines should be deployed.
 2. Left-click to uncover a field.
